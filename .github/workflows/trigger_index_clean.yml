@@ -1,0 +1,30 @@
+name: Trigger GitHub Index (Clean)
+
+# 每次推送 main 分支或手动触发都会执行
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # 支持手动触发
+
+jobs:
+  trigger_index:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Access key files to trigger indexing
+        run: |
+          echo "Accessing files to trigger GitHub indexing..."
+          # 遍历关键文件夹和文件触发索引
+          FILES=("README.md" "scripts/index.py" "*.py")
+          for f in "${FILES[@]}"; do
+            if ls $f 1> /dev/null 2>&1; then
+              cat $f > /dev/null
+            fi
+          done
+
+      - name: Confirm
+        run: echo "Index trigger workflow completed without adding extra commits."
